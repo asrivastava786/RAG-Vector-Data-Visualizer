@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Download, FileJson } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +13,16 @@ import { api } from "@/lib/api";
 
 const formats = ["json", "yaml", "langchain", "llamaindex", "fastapi"];
 
-export default function ReportsPage({ params }: { params: { projectId: string } }) {
+export default function ReportsPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const [format, setFormat] = useState("json");
   const recommendationQuery = useQuery({
-    queryKey: ["project-recommendation", params.projectId],
-    queryFn: () => api.projectRecommendation(params.projectId)
+    queryKey: ["project-recommendation", projectId],
+    queryFn: () => api.projectRecommendation(projectId)
   });
   const exportMutation = useMutation({
-    mutationFn: () => api.exportConfig(params.projectId, format)
+    mutationFn: () => api.exportConfig(projectId, format)
   });
 
   return (
@@ -29,7 +32,7 @@ export default function ReportsPage({ params }: { params: { projectId: string } 
           <div>
             <Link
               className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground"
-              href={`/projects/${params.projectId}`}
+              href={`/projects/${projectId}`}
             >
               <ArrowLeft className="h-4 w-4" />
               Project dashboard

@@ -54,8 +54,8 @@ export function EmbeddingScatterPlot({ data }: { data?: ScatterResponse }) {
           margin: { l: 28, r: 18, t: 18, b: 28 },
           paper_bgcolor: "rgba(0,0,0,0)",
           plot_bgcolor: "rgba(0,0,0,0)",
-          xaxis: { zeroline: true, title: "" },
-          yaxis: { zeroline: true, title: "" },
+          xaxis: { zeroline: true, title: data.x_axis_label || "x" },
+          yaxis: { zeroline: true, title: data.y_axis_label || "y" },
           showlegend: true,
           legend: { orientation: "h" }
         },

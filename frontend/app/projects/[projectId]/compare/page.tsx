@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, FlaskConical, Play, Settings2 } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { StrategyLeaderboard } from "@/components/experiments/strategy-leaderboard";
 import { AppShell } from "@/components/layout/app-shell";
@@ -18,7 +19,9 @@ const defaultQueries = [
   "What role approves leave requests?"
 ].join("\n");
 
-export default function StrategyComparisonPage({ params }: { params: { projectId: string } }) {
+export default function StrategyComparisonPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const queryClient = useQueryClient();
   const [name, setName] = useState("HR retrieval baseline comparison");
   const [description, setDescription] = useState("Compare indexed chunking strategies with RBAC-safe retrieval.");
@@ -28,16 +31,16 @@ export default function StrategyComparisonPage({ params }: { params: { projectId
   const [runResult, setRunResult] = useState<ExperimentRunResponse | null>(null);
 
   const strategiesQuery = useQuery({
-    queryKey: ["strategies", params.projectId],
-    queryFn: () => api.strategies(params.projectId)
+    queryKey: ["strategies", projectId],
+    queryFn: () => api.strategies(projectId)
   });
   const experimentsQuery = useQuery({
-    queryKey: ["experiments", params.projectId],
-    queryFn: () => api.experiments(params.projectId)
+    queryKey: ["experiments", projectId],
+    queryFn: () => api.experiments(projectId)
   });
   const recommendationQuery = useQuery({
-    queryKey: ["project-recommendation", params.projectId],
-    queryFn: () => api.projectRecommendation(params.projectId)
+    queryKey: ["project-recommendation", projectId],
+    queryFn: () => api.projectRecommendation(projectId)
   });
   const strategies = strategiesQuery.data ?? [];
   const effectiveStrategyIds = selectedStrategyIds.length
@@ -61,7 +64,7 @@ export default function StrategyComparisonPage({ params }: { params: { projectId
       if (!querySet.length) {
         throw new Error("Add at least one evaluation query.");
       }
-      const experiment = await api.createExperiment(params.projectId, {
+      const experiment = await api.createExperiment(projectId, {
         name,
         description,
         strategy_ids: effectiveStrategyIds,
@@ -73,8 +76,8 @@ export default function StrategyComparisonPage({ params }: { params: { projectId
     onSuccess: (result) => {
       setRunResult(result);
       setError(null);
-      void queryClient.invalidateQueries({ queryKey: ["experiments", params.projectId] });
-      void queryClient.invalidateQueries({ queryKey: ["project-recommendation", params.projectId] });
+      void queryClient.invalidateQueries({ queryKey: ["experiments", projectId] });
+      void queryClient.invalidateQueries({ queryKey: ["project-recommendation", projectId] });
     },
     onError: (err) => setError(err instanceof Error ? err.message : "Experiment run failed")
   });
@@ -94,7 +97,7 @@ export default function StrategyComparisonPage({ params }: { params: { projectId
           <div>
             <Link
               className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground"
-              href={`/projects/${params.projectId}`}
+              href={`/projects/${projectId}`}
             >
               <ArrowLeft className="h-4 w-4" />
               Project dashboard

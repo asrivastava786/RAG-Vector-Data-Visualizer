@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, DatabaseZap, GitBranch, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ChunkBoundaryViewer } from "@/components/chunks/chunk-boundary-viewer";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -10,20 +11,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 
-export default function StrategyDetailPage({ params }: { params: { strategyId: string } }) {
+export default function StrategyDetailPage() {
+  const params = useParams<{ strategyId: string }>();
+  const strategyId = params.strategyId;
   const queryClient = useQueryClient();
   const strategyQuery = useQuery({
-    queryKey: ["strategy", params.strategyId],
-    queryFn: () => api.strategy(params.strategyId)
+    queryKey: ["strategy", strategyId],
+    queryFn: () => api.strategy(strategyId)
   });
   const chunksQuery = useQuery({
-    queryKey: ["strategy-chunks", params.strategyId],
-    queryFn: () => api.strategyChunks(params.strategyId, 100)
+    queryKey: ["strategy-chunks", strategyId],
+    queryFn: () => api.strategyChunks(strategyId, 100)
   });
   const indexMutation = useMutation({
-    mutationFn: () => api.indexStrategy(params.strategyId),
+    mutationFn: () => api.indexStrategy(strategyId),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["strategy-chunks", params.strategyId] });
+      void queryClient.invalidateQueries({ queryKey: ["strategy-chunks", strategyId] });
     }
   });
 

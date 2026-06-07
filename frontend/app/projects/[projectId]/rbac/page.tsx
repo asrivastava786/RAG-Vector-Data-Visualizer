@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ShieldAlert, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -13,19 +14,21 @@ import type { RBACSimulationResponse, WorkspaceRole } from "@/types/api";
 
 const roles: WorkspaceRole[] = ["owner", "admin", "developer", "analyst", "viewer"];
 
-export default function RBACSafetyPage({ params }: { params: { projectId: string } }) {
+export default function RBACSafetyPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const [query, setQuery] = useState("Who is eligible for employee leave approval?");
   const [role, setRole] = useState<WorkspaceRole>("viewer");
   const [strategyId, setStrategyId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const strategiesQuery = useQuery({
-    queryKey: ["strategies", params.projectId],
-    queryFn: () => api.strategies(params.projectId)
+    queryKey: ["strategies", projectId],
+    queryFn: () => api.strategies(projectId)
   });
   const matrixQuery = useQuery({
-    queryKey: ["rbac-matrix", params.projectId],
-    queryFn: () => api.rbacMatrix(params.projectId)
+    queryKey: ["rbac-matrix", projectId],
+    queryFn: () => api.rbacMatrix(projectId)
   });
   const strategies = strategiesQuery.data ?? [];
   const selectedStrategyId = strategyId || strategies[0]?.id || "";
@@ -35,7 +38,7 @@ export default function RBACSafetyPage({ params }: { params: { projectId: string
       if (!selectedStrategyId) {
         throw new Error("Index a strategy before simulating RBAC retrieval.");
       }
-      return api.simulateRbac(params.projectId, {
+      return api.simulateRbac(projectId, {
         strategy_id: selectedStrategyId,
         query,
         role_simulation: role,
@@ -54,7 +57,7 @@ export default function RBACSafetyPage({ params }: { params: { projectId: string
           <div>
             <Link
               className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground"
-              href={`/projects/${params.projectId}`}
+              href={`/projects/${projectId}`}
             >
               <ArrowLeft className="h-4 w-4" />
               Project dashboard

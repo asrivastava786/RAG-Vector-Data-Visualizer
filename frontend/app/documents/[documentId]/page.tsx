@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { DocumentPreview } from "@/components/documents/document-preview";
 import { DocumentStatusBadge } from "@/components/documents/document-status-badge";
@@ -11,16 +12,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
 
-export default function DocumentDetailPage({ params }: { params: { documentId: string } }) {
+export default function DocumentDetailPage() {
+  const params = useParams<{ documentId: string }>();
+  const documentId = params.documentId;
   const queryClient = useQueryClient();
   const documentQuery = useQuery({
-    queryKey: ["document", params.documentId],
-    queryFn: () => api.document(params.documentId),
+    queryKey: ["document", documentId],
+    queryFn: () => api.document(documentId),
     retry: false
   });
   const processMutation = useMutation({
-    mutationFn: () => api.processDocument(params.documentId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["document", params.documentId] })
+    mutationFn: () => api.processDocument(documentId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["document", documentId] })
   });
 
   return (

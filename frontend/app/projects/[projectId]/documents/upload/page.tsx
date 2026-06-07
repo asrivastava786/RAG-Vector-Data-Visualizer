@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, FileUp, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,9 @@ import type { WorkspaceRole } from "@/types/api";
 
 const roles: WorkspaceRole[] = ["owner", "admin", "developer", "analyst", "viewer"];
 
-export default function DocumentUploadPage({ params }: { params: { projectId: string } }) {
+export default function DocumentUploadPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -32,7 +34,7 @@ export default function DocumentUploadPage({ params }: { params: { projectId: st
       if (!selectedRoles.length) {
         throw new Error("Select at least one allowed role.");
       }
-      return api.uploadDocument(params.projectId, {
+      return api.uploadDocument(projectId, {
         title: title || file.name,
         file,
         allowedRoles: selectedRoles,
@@ -61,7 +63,7 @@ export default function DocumentUploadPage({ params }: { params: { projectId: st
       <section className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <Link className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground" href={`/projects/${params.projectId}`}>
+            <Link className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground" href={`/projects/${projectId}`}>
               <ArrowLeft className="h-4 w-4" />
               Project dashboard
             </Link>
@@ -157,4 +159,3 @@ function Field(props: React.InputHTMLAttributes<HTMLInputElement> & { label: str
     </label>
   );
 }
-

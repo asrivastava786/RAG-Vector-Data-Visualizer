@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Brain, Network, Search, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { EmbeddingScatterPlot } from "@/components/retrieval/embedding-scatter-plot";
 import { RetrievalFunnel } from "@/components/retrieval/retrieval-funnel";
@@ -16,7 +17,9 @@ import type { QueryAnalyzeResponse, RetrievedChunk, WorkspaceRole } from "@/type
 
 const roles: WorkspaceRole[] = ["owner", "admin", "developer", "analyst", "viewer"];
 
-export default function QueryAnalysisPage({ params }: { params: { projectId: string } }) {
+export default function QueryAnalysisPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const [query, setQuery] = useState("Who is eligible for employee leave approval?");
   const [strategyId, setStrategyId] = useState("");
   const [role, setRole] = useState<WorkspaceRole>("viewer");
@@ -24,8 +27,8 @@ export default function QueryAnalysisPage({ params }: { params: { projectId: str
   const [error, setError] = useState<string | null>(null);
 
   const strategiesQuery = useQuery({
-    queryKey: ["strategies", params.projectId],
-    queryFn: () => api.strategies(params.projectId)
+    queryKey: ["strategies", projectId],
+    queryFn: () => api.strategies(projectId)
   });
   const strategies = strategiesQuery.data ?? [];
   const selectedStrategyId = strategyId || strategies[0]?.id || "";
@@ -35,7 +38,7 @@ export default function QueryAnalysisPage({ params }: { params: { projectId: str
       if (!selectedStrategyId) {
         throw new Error("Create and index a strategy before running query analysis.");
       }
-      return api.analyzeQuery(params.projectId, {
+      return api.analyzeQuery(projectId, {
         query,
         strategy_id: selectedStrategyId,
         top_k: topK,
@@ -50,7 +53,7 @@ export default function QueryAnalysisPage({ params }: { params: { projectId: str
   });
 
   const optimizeMutation = useMutation({
-    mutationFn: () => api.optimizeQuery(params.projectId, query),
+    mutationFn: () => api.optimizeQuery(projectId, query),
     onError: (err) => setError(err instanceof Error ? err.message : "Query optimization failed")
   });
 
@@ -81,7 +84,7 @@ export default function QueryAnalysisPage({ params }: { params: { projectId: str
           <div>
             <Link
               className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground"
-              href={`/projects/${params.projectId}`}
+              href={`/projects/${projectId}`}
             >
               <ArrowLeft className="h-4 w-4" />
               Project dashboard
@@ -220,7 +223,9 @@ export default function QueryAnalysisPage({ params }: { params: { projectId: str
           <Card>
             <CardHeader className="flex flex-row items-start justify-between">
               <CardTitle>Semantic Scatter</CardTitle>
-              <Badge tone="neutral">{scatterQuery.isFetching ? "Refreshing" : "2D projection"}</Badge>
+              <Badge tone="neutral">
+                {scatterQuery.isFetching ? "Refreshing" : scatterQuery.data?.projection_method ?? "2D projection"}
+              </Badge>
             </CardHeader>
             <CardContent>
               <EmbeddingScatterPlot data={scatterQuery.data} />

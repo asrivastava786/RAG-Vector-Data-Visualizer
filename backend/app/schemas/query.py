@@ -103,6 +103,9 @@ class ScatterPoint(BaseModel):
 
 class ScatterResponse(BaseModel):
     points: list[ScatterPoint]
+    projection_method: str = "score_space"
+    x_axis_label: str = "x"
+    y_axis_label: str = "y"
 
 
 class GraphNode(BaseModel):

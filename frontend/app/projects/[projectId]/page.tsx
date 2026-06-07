@@ -1,9 +1,12 @@
+"use client";
+
 import {
   BarChart3,
   BrainCircuit,
   FileJson,
   FileText,
   GitBranch,
+  Layers,
   Network,
   ShieldCheck,
   SlidersHorizontal,
@@ -11,6 +14,7 @@ import {
   type LucideIcon
 } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,12 +26,15 @@ const surfaces: Array<[string, string, LucideIcon]> = [
   ["Chunk Inspector", "Inspect boundaries, overlaps, access tags, and split warnings.", GitBranch],
   ["Query Analysis", "Trace dense, sparse, hybrid, rerank, and funnel stages.", Network],
   ["Strategy Comparison", "Compare precision, recall, citation quality, latency, and cost.", BarChart3],
+  ["Data Layer", "Route facts, embeddings, relationships, policies, and files across polyglot stores.", Layers],
   ["RBAC Safety", "Simulate roles and hard-fail unauthorized chunk exposure.", ShieldCheck],
   ["Reports", "Export JSON, YAML, pseudocode, and FastAPI integration snippets.", FileJson],
   ["Optimization", "Tune chunking, query expansion, retrieval weights, and reranking.", SlidersHorizontal]
 ];
 
-export default function ProjectDashboardPage({ params }: { params: { projectId: string } }) {
+export default function ProjectDashboardPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   return (
     <AppShell>
       <section className="space-y-5">
@@ -35,7 +42,7 @@ export default function ProjectDashboardPage({ params }: { params: { projectId: 
           <div>
             <div className="mb-2 flex items-center gap-2">
               <Badge tone="info">Project</Badge>
-              <span className="text-xs text-muted-foreground">{params.projectId}</span>
+              <span className="text-xs text-muted-foreground">{projectId}</span>
             </div>
             <h1 className="text-2xl font-semibold">RAG Optimization Project</h1>
             <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
@@ -49,7 +56,7 @@ export default function ProjectDashboardPage({ params }: { params: { projectId: 
               className={cn(
                 "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-muted px-4 text-sm font-medium text-foreground hover:bg-muted/80"
               )}
-              href={`/projects/${params.projectId}/strategies/new`}
+              href={`/projects/${projectId}/strategies/new`}
             >
               <BrainCircuit className="h-4 w-4" />
               New strategy
@@ -58,7 +65,7 @@ export default function ProjectDashboardPage({ params }: { params: { projectId: 
               className={cn(
                 "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               )}
-              href={`/projects/${params.projectId}/documents/upload`}
+              href={`/projects/${projectId}/documents/upload`}
             >
               <Upload className="h-4 w-4" />
               Upload document
@@ -79,42 +86,49 @@ export default function ProjectDashboardPage({ params }: { params: { projectId: 
                   {title === "Query Analysis" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/query`}
+                      href={`/projects/${projectId}/query`}
                     >
                       Open query analysis
                     </Link>
                   ) : title === "Strategy Comparison" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/compare`}
+                      href={`/projects/${projectId}/compare`}
                     >
                       Compare strategies
+                    </Link>
+                  ) : title === "Data Layer" ? (
+                    <Link
+                      className="text-sm font-medium text-primary hover:underline"
+                      href={`/projects/${projectId}/data-layer`}
+                    >
+                      Open data strategy
                     </Link>
                   ) : title === "Chunk Inspector" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/strategies/new`}
+                      href={`/projects/${projectId}/strategies/new`}
                     >
                       Create strategy
                     </Link>
                   ) : title === "RBAC Safety" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/rbac`}
+                      href={`/projects/${projectId}/rbac`}
                     >
                       Simulate access
                     </Link>
                   ) : title === "Documents" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/documents/upload`}
+                      href={`/projects/${projectId}/documents/upload`}
                     >
                       Upload document
                     </Link>
                   ) : title === "Reports" ? (
                     <Link
                       className="text-sm font-medium text-primary hover:underline"
-                      href={`/projects/${params.projectId}/reports`}
+                      href={`/projects/${projectId}/reports`}
                     >
                       Open reports
                     </Link>

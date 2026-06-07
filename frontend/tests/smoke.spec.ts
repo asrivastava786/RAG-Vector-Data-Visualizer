@@ -28,6 +28,11 @@ test("dashboard renders real project links and navigates", async ({ page }) => {
   await expect(page).toHaveURL(/\/projects\/.+\/compare/);
   await expect(page.getByRole("heading", { name: "Strategy Comparison" })).toBeVisible();
 
+  await page.getByRole("link", { name: "Data Layer", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/.+\/data-layer/);
+  await expect(page.getByRole("heading", { name: "Polyglot Data Layer Strategy" })).toBeVisible();
+  await expect(page.getByText("Recommended Architecture")).toBeVisible();
+
   await page.getByRole("link", { name: "Reports", exact: true }).click();
   await expect(page).toHaveURL(/\/projects\/.+\/reports/);
   await expect(page.getByRole("heading", { name: "Reports" })).toBeVisible();

@@ -4,6 +4,7 @@ import {
   Activity,
   BarChart3,
   Database,
+  Layers,
   FileText,
   GitCompare,
   Home,
@@ -41,6 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     },
     { id: "query", href: project ? `${projectBase}/query` : "/dashboard", label: "Query Analysis", icon: Activity },
     { id: "compare", href: project ? `${projectBase}/compare` : "/dashboard", label: "Comparison", icon: GitCompare },
+    { id: "data-layer", href: project ? `${projectBase}/data-layer` : "/dashboard", label: "Data Layer", icon: Layers },
     { id: "rbac", href: project ? `${projectBase}/rbac` : "/dashboard", label: "RBAC Safety", icon: ShieldCheck },
     { id: "reports", href: project ? `${projectBase}/reports` : "/dashboard", label: "Reports", icon: FileText },
     { id: "admin", href: "/admin", label: "Admin", icon: Settings }

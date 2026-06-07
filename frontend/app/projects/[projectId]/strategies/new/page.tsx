@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { ArrowLeft, BrainCircuit, Play } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,9 @@ const splitterOptions: Array<{ value: SplitterType; label: string; detail: strin
   { value: "table_aware", label: "Table-aware", detail: "Preserve markdown tables as blocks" }
 ];
 
-export default function NewStrategyPage({ params }: { params: { projectId: string } }) {
+export default function NewStrategyPage() {
+  const params = useParams<{ projectId: string }>();
+  const projectId = params.projectId;
   const router = useRouter();
   const [name, setName] = useState("Heading recursive baseline");
   const [splitterType, setSplitterType] = useState<SplitterType>("recursive");
@@ -36,7 +38,7 @@ export default function NewStrategyPage({ params }: { params: { projectId: strin
       if (overlap >= chunkSize) {
         throw new Error("Overlap must be smaller than chunk size.");
       }
-      return api.createStrategy(params.projectId, {
+      return api.createStrategy(projectId, {
         name,
         splitter_type: splitterType,
         chunk_size: chunkSize,
@@ -61,7 +63,7 @@ export default function NewStrategyPage({ params }: { params: { projectId: strin
           <div>
             <Link
               className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground"
-              href={`/projects/${params.projectId}`}
+              href={`/projects/${projectId}`}
             >
               <ArrowLeft className="h-4 w-4" />
               Project dashboard

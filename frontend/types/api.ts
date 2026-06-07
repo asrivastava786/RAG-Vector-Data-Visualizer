@@ -199,6 +199,9 @@ export type ScatterPoint = {
 
 export type ScatterResponse = {
   points: ScatterPoint[];
+  projection_method: "pca" | "score_space" | string;
+  x_axis_label: string;
+  y_axis_label: string;
 };
 
 export type GraphNode = {
