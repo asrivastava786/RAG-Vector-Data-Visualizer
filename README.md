@@ -1,4 +1,4 @@
-# RAG Visual Optimizer
+# RAG Visual Optimizer - In Progress
 
 RAG Visual Optimizer is an enterprise SaaS platform for visual analysis, debugging, evaluation, and optimization of retrieval-augmented generation pipelines. It is intentionally not a generic chat-with-PDF app: the product centers on chunking strategy inspection, retrieval experiments, semantic visualizations, score breakdowns, and RBAC-safe retrieval.
 
